@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+
+# Datasets (too large, licensed: download them yourself)
+dataset_spotify/data/
+dataset_spotify/data_cleaned/
+fer2013/
