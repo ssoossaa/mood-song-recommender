@@ -48,24 +48,94 @@ FACE_TO_MOOD = {
     └── test/<emotion>/*.jpg
 ```
 
-## Setup
+## Installation guide
+
+> **For LLM / coding agents:** follow the steps below in order, from a terminal (macOS or Linux). Run every command from the repository root. Steps marked **👤 HUMAN** need a person (account sign-up, accepting a license, or a personal token): stop there, tell the user exactly what to do, and wait for them to confirm before continuing. Never create accounts, accept licenses or enter credentials on the user's behalf.
+
+### Step 0: Prerequisites
+
+- Python **3.9 or newer** (`python3 --version`) and `git`.
+- About **25 GB of free disk space** for the full Spotify dataset (zip + extracted + cleaned). You can delete the zip and `dataset_spotify/data/` after cleaning.
+
+### Step 1: Clone the repository
+
+```bash
+git clone git@github.com:ssoossaa/mood-song-recommender.git
+cd mood-song-recommender
+```
+
+(Use `https://github.com/ssoossaa/mood-song-recommender.git` if SSH is not set up. The repo is private: you must have been invited.)
+
+### Step 2: Create the virtual environment
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Then get the data (the datasets are **not** included in this repo because of their size and licenses):
+Check: `python -c "import pandas, matplotlib, PIL; print('ok')"` prints `ok`.
 
-1. **Spotify MPD**: download from [AIcrowd](https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge), unzip into `dataset_spotify/data`, then clean it with `python3 dataset_spotify/src/clean_data.py` (output: `dataset_spotify/data_cleaned`).
-2. **FER-2013**: download from [Kaggle](https://www.kaggle.com/datasets/msambare/fer2013) (free account required) and unzip into `fer2013/`.
+### Step 3: FER-2013 face images (~60 MB)
 
-Open the notebook:
+1. **👤 HUMAN:** create a free account on [kaggle.com](https://www.kaggle.com), go to *Settings → API → Create New Token*. This downloads `kaggle.json`. Put it in `~/.kaggle/kaggle.json`, then run `chmod 600 ~/.kaggle/kaggle.json`.
+2. Download and unzip:
+
+```bash
+pip install kaggle
+kaggle datasets download -d msambare/fer2013 -p fer2013 --unzip
+```
+
+Check: `ls fer2013` shows `train` and `test`, each containing 7 emotion folders (`angry disgust fear happy neutral sad surprise`).
+
+*Fallback without the API:* the human downloads the zip from <https://www.kaggle.com/datasets/msambare/fer2013> and unzips it into `fer2013/`.
+
+### Step 4: Spotify Million Playlist Dataset (~5.4 GB zip)
+
+1. **👤 HUMAN:** sign in on [AIcrowd](https://www.aicrowd.com/challenges/spotify-million-playlist-dataset-challenge), accept the challenge rules, open the *Resources* tab and download `spotify_million_playlist_dataset.zip`. Tell the agent where the file is saved (usually `~/Downloads`).
+2. Unzip it into `dataset_spotify/`. The zip contains a `data/` folder with the 1,000 `mpd.slice.*.json` files:
+
+```bash
+unzip ~/Downloads/spotify_million_playlist_dataset.zip -d dataset_spotify_tmp
+mkdir -p dataset_spotify/data
+mv dataset_spotify_tmp/data/*.json dataset_spotify/data/
+rm -rf dataset_spotify_tmp
+```
+
+Check: `ls dataset_spotify/data | wc -l` prints `1000`.
+
+3. Clean the data (removes playlists and tracks with empty fields, writes to `dataset_spotify/data_cleaned/`). This takes a while:
+
+```bash
+python3 dataset_spotify/src/clean_data.py --max-files 1   # quick test on one file
+python3 dataset_spotify/src/clean_data.py                 # full run
+```
+
+Check: `ls dataset_spotify/data_cleaned | wc -l` prints `1000`, and `python3 verifier_dimensions_spotify.py` prints the number of rows and columns.
+
+> Short on disk space or time? The notebook only reads the first 50 slices (`N_SLICES = 50`), so the full cleaning run is optional if you clean just those files.
+
+### Step 5: Run the notebook
 
 ```bash
 jupyter notebook mood_recommender.ipynb
 ```
+
+Run all cells (*Kernel → Restart & Run All*). Section 2 should print `50000` playlists and show the head of the faces table.
+
+### Expected layout after installation
+
+```
+mood-song-recommender/
+├── .venv/
+├── fer2013/train/<emotion>/*.jpg
+├── fer2013/test/<emotion>/*.jpg
+├── dataset_spotify/data/mpd.slice.*.json          (1,000 files)
+└── dataset_spotify/data_cleaned/mpd.slice.*.json  (1,000 files)
+```
+
+None of these folders are tracked by git (see `.gitignore`).
 
 ## Licenses
 

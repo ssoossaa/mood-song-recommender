@@ -5,9 +5,7 @@ import re
 import pandas as pd
 
 
-dossier_dataset = Path(
-    "/Users/flavien/Projects/spotify_python/dataset_spotify"
-)
+dossier_dataset = Path(__file__).resolve().parent / "dataset_spotify" / "data_cleaned"
 
 fichiers_csv = sorted(dossier_dataset.rglob("*.csv"))
 fichiers_json = sorted(dossier_dataset.rglob("*.json"))
