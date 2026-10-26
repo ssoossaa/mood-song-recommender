@@ -54,17 +54,34 @@ FACE_TO_MOOD = {
 
 ### Step 0: Prerequisites
 
-- Python **3.9 or newer** (`python3 --version`) and `git`.
+- Python **3.9 or newer** (`python3 --version`). If missing: macOS `brew install python`, Windows `winget install --id Python.Python.3.12 -e`, Linux `sudo apt install python3 python3-venv`.
+- git and a GitHub account (see Step 0b if you have neither).
 - About **25 GB of free disk space** for the full Spotify dataset (zip + extracted + cleaned). You can delete the zip and `dataset_spotify/data/` after cleaning.
+
+### Step 0b: Install git and get GitHub access (skip if `git --version` and `gh auth status` already work)
+
+1. **👤 HUMAN:** create a free account on [github.com](https://github.com/signup) if you don't have one, send your username to the repo owner, and **accept the invitation** (e-mail or <https://github.com/ssoossaa/mood-song-recommender/invitations>). The repo is private: without an accepted invitation, cloning fails with "Repository not found".
+2. Install git and the GitHub CLI (`gh`):
+
+   - **macOS:** `xcode-select --install` installs git. For `gh`, install [Homebrew](https://brew.sh) if `brew --version` fails, then `brew install gh`.
+   - **Windows:** `winget install --id Git.Git -e` and `winget install --id GitHub.cli -e`, then reopen the terminal (use *Git Bash* for the commands in this guide).
+   - **Linux (Debian/Ubuntu):** `sudo apt install git gh`.
+
+   Check: `git --version` and `gh --version` both print a version.
+3. **👤 HUMAN:** log in to GitHub. Run `gh auth login`, choose *GitHub.com → HTTPS → Login with a web browser*, and enter the code shown in the browser. Then run `gh auth setup-git` so `git` uses this login.
+
+   Check: `gh auth status` says "Logged in to github.com".
 
 ### Step 1: Clone the repository
 
 ```bash
-git clone git@github.com:ssoossaa/mood-song-recommender.git
+gh repo clone ssoossaa/mood-song-recommender
 cd mood-song-recommender
 ```
 
-(Use `https://github.com/ssoossaa/mood-song-recommender.git` if SSH is not set up. The repo is private: you must have been invited.)
+(Equivalent: `git clone https://github.com/ssoossaa/mood-song-recommender.git`.)
+
+*No git at all?* While logged in on github.com, open the repo page, click **Code → Download ZIP**, unzip it, and open a terminal in the unzipped folder. You won't be able to pull updates, but everything else works.
 
 ### Step 2: Create the virtual environment
 
